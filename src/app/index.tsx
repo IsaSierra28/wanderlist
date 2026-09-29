@@ -1,29 +1,27 @@
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import PlaceCard from "@/components/PlaceCard";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Spacing } from "@/constants/theme";
+import { ThemedText } from "@/components/themed-text";
+import { BottomTabInset, Spacing } from "@/constants/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-function Header() {
-  return (
-    <View style={styles.header}>
-      <Text style={styles.appName}>Wanderlist</Text>
-      <Text style={styles.tagline}>Places you want to see</Text>
-    </View>
-  );
-}
-
 export default function Index() {
+  const appName = "Wanderlist";
+
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Header />
+        <View style={styles.header}>
+          <ThemedText type="subtitle" style={styles.appName}>
+            {appName}
+          </ThemedText>
+          <ThemedText type="small" style={styles.tagline}>
+            Places I want to visit someday
+          </ThemedText>
+        </View>
+
         <Image
-          source={{ uri: "https://picsum.photos/id/40/1000/600" }}
-          style={{
-            width: "100%",
-            height: 140,
-            borderRadius: 12,
-          }}
+          source={{ uri: "https://picsum.photos/400/200" }}
+          style={styles.image}
         />
 
         <PlaceCard name="Kyoto" category="City" notes="Temples in autumn" />
@@ -33,19 +31,38 @@ export default function Index() {
           notes="Lake Louise at sunrise"
         />
         <PlaceCard name="Lisbon" category="Food" notes="Pasteis de nata tour" />
+        <PlaceCard name="Pelotas" category="Food" notes="Barbeque" />
+        <PlaceCard name="Toronto" category="City" notes="CN tower" />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
+  screen: {
+    flex: 1,
+  },
   content: {
-    paddingVertical: Spacing.four,
-    paddingHorizontal: Spacing.three,
+    padding: Spacing.three,
+    paddingBottom: BottomTabInset + Spacing.three,
     gap: Spacing.three,
   },
-  header: { paddingVertical: 24, alignItems: "center" },
-  appName: { fontSize: 28, fontWeight: "700" },
-  tagline: { fontSize: 14, color: "#548" },
+  header: {
+    backgroundColor: "#ff7a59",
+    borderRadius: 12,
+    padding: Spacing.three,
+    gap: Spacing.one,
+  },
+  appName: {
+    color: "#fff",
+  },
+  tagline: {
+    color: "#fff",
+    opacity: 0.9,
+  },
+  image: {
+    width: "100%",
+    height: 140,
+    borderRadius: 12,
+  },
 });
