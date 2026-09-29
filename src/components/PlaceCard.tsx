@@ -1,9 +1,6 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { Spacing } from "@/constants/theme";
-import { useTheme } from "@/hooks/use-theme";
 import Badge from "./Badge";
 
 type PlaceCardProps = {
@@ -13,37 +10,27 @@ type PlaceCardProps = {
 };
 
 export default function PlaceCard({ name, category, notes }: PlaceCardProps) {
-  const theme = useTheme();
-
   return (
-    <ThemedView
-      type="backgroundElement"
-      style={[styles.card, { borderColor: theme.backgroundSelected }]}
-    >
+    <View style={styles.card}>
       <View style={styles.header}>
-        <ThemedText type="smallBold">{name}</ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
-          {category}
-        </ThemedText>
-      </View>
-      <View>
-        <Badge label="must-see" />
+        <Text style={styles.name}>{name}</Text>
+        <Badge label={category} />
       </View>
 
-      <ThemedText type="small" themeColor="textSecondary">
-        {notes}
-      </ThemedText>
-    </ThemedView>
+      <Text style={styles.notes}>{notes}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    backgroundColor: "#fff8f3",
     borderRadius: Spacing.three,
     padding: Spacing.three,
     borderWidth: 1,
+    borderColor: "#f3d9cc",
     gap: Spacing.two,
-    elevation: 10,
+    elevation: 4,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -52,5 +39,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#222",
+  },
+  notes: {
+    fontSize: 14,
+    color: "#555",
   },
 });
