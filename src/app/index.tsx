@@ -1,68 +1,170 @@
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import PlaceCard from "@/components/PlaceCard";
-import { ThemedText } from "@/components/themed-text";
-import { BottomTabInset, Spacing } from "@/constants/theme";
+import { useState } from "react";
+import {
+    Button,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Badge from "../components/Badge";
+import Header from "../components/Header";
+import PlaceCard from "../components/PlaceCard";
+import { BottomTabInset } from "../constants/theme";
+import { Place } from "@/lib/type";
+
+type Errors = {
+    name?: string;
+    notes?: string;
+    category?: string;
+};
 
 export default function Index() {
-  const appName = "Wanderlist";
+    const [places, setPlaces] = useState<Place[]>([]);
+    const [name, setName] = useState("");
+    const [notes, setNotes] = useState("");
+    const [category, setCategory] = useState("");
+    const [errors, setErrors] = useState<FormErrors>({});
 
-  return (
-    <SafeAreaView style={styles.screen} edges={["top"]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <ThemedText type="subtitle" style={styles.appName}>
-            {appName}
-          </ThemedText>
-          <ThemedText type="small" style={styles.tagline}>
-            Places I want to visit someday
-          </ThemedText>
-        </View>
+    type FormErrors = {
+        name?: string;
+        notes?: string;
+        category?: string;
 
-        <Image
-          source={{ uri: "https://picsum.photos/400/200" }}
-          style={styles.image}
-        />
+    };
 
-        <PlaceCard name="Kyoto" category="City" notes="Temples in autumn" />
-        <PlaceCard
-          name="Banff"
-          category="Nature"
-          notes="Lake Louise at sunrise"
-        />
-        <PlaceCard name="Lisbon" category="Food" notes="Pasteis de nata tour" />
-        <PlaceCard name="Pelotas" category="Food" notes="Barbeque" />
-        <PlaceCard name="Toronto" category="City" notes="CN tower" />
-      </ScrollView>
-    </SafeAreaView>
-  );
+    function validate() {
+        const next: FormErrors = {};
+        if (!name.trim()) next.name = "Name is required.";
+        if (name.trim().length > 40) {
+            next.name = "Name must be 40 characters or fewer.";
+        }
+        if (places.some((p) => p.name === name.trim())) {
+            next.name = "That place is already in the list.";
+        }
+        if (!notes.trim()) next.notes = "Notes can't be empty.";
+        if (notes.trim().length > 200) {
+            next.notes = "Notes must be 200 characters or fewer.";
+        }
+        const allowed = ["city", "nature", "food", "other"];
+        if (!allowed.includes(category.trim().toLowerCase())) {
+            next.category = `Category must be one of: ${allowed.join(", ")}.`;
+        }
+        setErrors(next);
+        return Object.keys(next).length === 0;
+    }
+
+    function handleAdd() {
+        if (!validate()) return;
+        setPlaces([
+            {
+                id: Date.now().toString(),
+                name: name.trim(),
+                notes: notes.trim()  || undefined,
+                category: category.trim().toLocaleLowerCase() as  Place["category"],
+            },
+            ...places,
+        ]);
+        setName("");
+        setNotes("");
+        setCategory("");
+        setErrors({});
+    }
+
+    return (
+        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+            <ScrollView
+                contentContainerStyle={{
+                    padding: 16,
+                    paddingBottom: BottomTabInset + 16,
+                    gap: 12,
+                }}
+            >
+                <Header title="Wanderlist" tagline="Places you want to see" />
+
+                <Image
+                    source={{ uri: "https://picsum.photos/400/200" }}
+                    style={{ width: "100%", height: 140, borderRadius: 12 }}
+                />
+
+                <PlaceCard
+                    name="Kyoto"
+                    category="city"
+                    notes="Temples in autumn"
+                />
+                <View style={styles.badgeRow}>
+                    <Badge label="must-see" icon="⭐" />
+                    <Badge label="autumn" icon="🍁" />
+                </View>
+                <PlaceCard
+                    name="Banff"
+                    category="nature"
+                    notes="Lake Louise at sunrise"
+                />
+                <View style={styles.badgeRow}>
+                    <Badge label="hiking" />
+                    <Badge label="lakes" />
+                </View>
+                <PlaceCard
+                    name="Lisbon"
+                    category="food"
+                    notes="Pasteis de nata tour"
+                />
+                <View style={styles.badgeRow}>
+                    <Badge label="pastries" />
+                    <Badge label="budget" />
+                </View>
+
+                <Text style={styles.formTitle}>Add a place</Text>
+                <TextInput
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Name"
+                    style={styles.input}
+                />
+                {errors.name && <Text style={styles.error}>{errors.name}</Text>}
+                <TextInput
+                    value={notes}
+                    onChangeText={setNotes}
+                    placeholder="Notes"
+                    style={styles.input}
+                />
+                {errors.notes && (
+                    <Text style={styles.error}>{errors.notes}</Text>
+                )}
+                <TextInput
+                    value={category}
+                    onChangeText={setCategory}
+                    placeholder="Category"
+                    style={styles.input}
+                />
+                {errors.category && (
+                    <Text style={styles.error}>{errors.category}</Text>
+                )}
+                <Button title="Add place" onPress={handleAdd} />
+
+                <Text>{places.length} places</Text>
+                <Button title="Clear list" onPress={() => setPlaces([])} />
+                {places.map((p) => (
+                    <Text key={p.id}>
+                        {p.name} - {p.category}
+                    </Text>
+                ))}
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  content: {
-    padding: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    gap: Spacing.three,
-  },
-  header: {
-    backgroundColor: "#ff7a59",
-    borderRadius: 12,
-    padding: Spacing.three,
-    gap: Spacing.one,
-  },
-  appName: {
-    color: "#fff",
-  },
-  tagline: {
-    color: "#fff",
-    opacity: 0.9,
-  },
-  image: {
-    width: "100%",
-    height: 140,
-    borderRadius: 12,
-  },
+    badgeRow: { flexDirection: "row", gap: 8 },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
+        padding: 10,
+    },
+    formTitle: { fontSize: 20, fontWeight: "600", marginTop: 12 },
+    error: { color: "#c00" },
 });
