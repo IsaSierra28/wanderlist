@@ -15,7 +15,7 @@ import PlaceCard from "../components/PlaceCard";
 import { BottomTabInset } from "../constants/theme";
 import { Place } from "@/lib/type";
 
-type Errors = {
+type FormErrors = {
     name?: string;
     notes?: string;
     category?: string;
@@ -27,13 +27,6 @@ export default function Index() {
     const [notes, setNotes] = useState("");
     const [category, setCategory] = useState("");
     const [errors, setErrors] = useState<FormErrors>({});
-
-    type FormErrors = {
-        name?: string;
-        notes?: string;
-        category?: string;
-
-    };
 
     function validate() {
         const next: FormErrors = {};
