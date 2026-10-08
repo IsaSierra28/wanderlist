@@ -21,6 +21,12 @@ type FormErrors = {
     category?: string;
 };
 
+const allowed = ["city", "nature", "food", "other"];
+
+function isValidCategory(value: string): boolean {
+    return allowed.includes(value.trim().toLowerCase());
+}
+
 export default function Index() {
     const [places, setPlaces] = useState<Place[]>([]);
     const [name, setName] = useState("");
@@ -41,8 +47,7 @@ export default function Index() {
         if (notes.trim().length > 200) {
             next.notes = "Notes must be 200 characters or fewer.";
         }
-        const allowed = ["city", "nature", "food", "other"];
-        if (!allowed.includes(category.trim().toLowerCase())) {
+        if (!isValidCategory(category)) {
             next.category = `Category must be one of: ${allowed.join(", ")}.`;
         }
         setErrors(next);
