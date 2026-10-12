@@ -13,7 +13,7 @@ import Badge from "../components/Badge";
 import Header from "../components/Header";
 import PlaceCard from "../components/PlaceCard";
 import { BottomTabInset } from "../constants/theme";
-import { Place } from "@/lib/type";
+import { Place } from "@/lib/types";
 
 type FormErrors = {
     name?: string;
@@ -43,7 +43,6 @@ export default function Index() {
         if (places.some((p) => p.name === name.trim())) {
             next.name = "That place is already in the list.";
         }
-        if (!notes.trim()) next.notes = "Notes can't be empty.";
         if (notes.trim().length > 200) {
             next.notes = "Notes must be 200 characters or fewer.";
         }
@@ -56,15 +55,13 @@ export default function Index() {
 
     function handleAdd() {
         if (!validate()) return;
-        setPlaces([
-            {
-                id: Date.now().toString(),
-                name: name.trim(),
-                notes: notes.trim()  || undefined,
-                category: category.trim().toLocaleLowerCase() as  Place["category"],
-            },
-            ...places,
-        ]);
+        const newPlace: Place = {
+            id: Date.now().toString(),
+            name: name.trim(),
+            notes: notes.trim() || undefined,
+            category: category.trim().toLowerCase() as Place["category"],
+        };
+        setPlaces([...places, newPlace]);
         setName("");
         setNotes("");
         setCategory("");
@@ -145,10 +142,12 @@ export default function Index() {
 
                 <Text>{places.length} places</Text>
                 <Button title="Clear list" onPress={() => setPlaces([])} />
+                {places.length === 0 && <Text>No places yet</Text>}
                 {places.map((p) => (
-                    <Text key={p.id}>
-                        {p.name} - {p.category}
-                    </Text>
+                    <View key={p.id} style={styles.badgeRow}>
+                        <Text>{p.name}</Text>
+                        <Badge label={p.category} />
+                    </View>
                 ))}
             </ScrollView>
         </SafeAreaView>
