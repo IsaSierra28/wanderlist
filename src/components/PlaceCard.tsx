@@ -2,22 +2,23 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Spacing } from "@/constants/theme";
 import Badge from "./Badge";
+import { Place } from "@/lib/types";
 
 type PlaceCardProps = {
-  name: string;
-  category: string;
-  notes: string;
+ place : Place;
 };
 
-export default function PlaceCard({ name, category, notes }: PlaceCardProps) {
+export default function PlaceCard({ place }: PlaceCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.name}>{name}</Text>
-        <Badge label={category} />
+        <Text style={styles.name}>{place.name}</Text>
+        <Badge label={place.category} />
       </View>
 
-      <Text style={styles.notes}>{notes}</Text>
+          {place.notes && <Text style={styles.notes} numberOfLines={2}>{place.notes}</Text>}
+
+
     </View>
   );
 }

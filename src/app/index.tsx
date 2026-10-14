@@ -1,8 +1,9 @@
 import { useState } from "react";
 import {
     Button,
+    FlatList,
     Image,
-    ScrollView,
+    Pressable,
     StyleSheet,
     Text,
     TextInput,
@@ -28,7 +29,11 @@ function isValidCategory(value: string): boolean {
 }
 
 export default function Index() {
-    const [places, setPlaces] = useState<Place[]>([]);
+    const [places, setPlaces] = useState<Place[]>([
+        { id: "kyoto", name: "Kyoto", category: "city", notes: "Temples in autumn" },
+        { id: "banff", name: "Banff", category: "nature", notes: "Lake Louise at sunrise" },
+        { id: "lisbon", name: "Lisbon", category: "food", notes: "Pasteis de nata tour" },
+    ]);
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");
     const [category, setCategory] = useState("");
@@ -61,95 +66,91 @@ export default function Index() {
             notes: notes.trim() || undefined,
             category: category.trim().toLowerCase() as Place["category"],
         };
-        setPlaces([...places, newPlace]);
+        setPlaces([newPlace, ...places]);
         setName("");
         setNotes("");
         setCategory("");
         setErrors({});
     }
 
+    // const many: Place[] = Array.from({ length: 500 }, (_, i) => ({
+    //     id: String(i),
+    //     name: `Place ${i}`,
+    //     category: "city",
+    // }));
+
     return (
         <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-            <ScrollView
+            <FlatList
+            data={[...places].sort((a, b) => a.name.localeCompare(b.name))}
+                keyExtractor={(item) => item.id}
                 contentContainerStyle={{
                     padding: 16,
                     paddingBottom: BottomTabInset + 16,
                     gap: 12,
                 }}
-            >
-                <Header title="Wanderlist" tagline="Places you want to see" />
-
-                <Image
-                    source={{ uri: "https://picsum.photos/400/200" }}
-                    style={{ width: "100%", height: 140, borderRadius: 12 }}
-                />
-
-                <PlaceCard
-                    name="Kyoto"
-                    category="city"
-                    notes="Temples in autumn"
-                />
-                <View style={styles.badgeRow}>
-                    <Badge label="must-see" icon="⭐" />
-                    <Badge label="autumn" icon="🍁" />
-                </View>
-                <PlaceCard
-                    name="Banff"
-                    category="nature"
-                    notes="Lake Louise at sunrise"
-                />
-                <View style={styles.badgeRow}>
-                    <Badge label="hiking" />
-                    <Badge label="lakes" />
-                </View>
-                <PlaceCard
-                    name="Lisbon"
-                    category="food"
-                    notes="Pasteis de nata tour"
-                />
-                <View style={styles.badgeRow}>
-                    <Badge label="pastries" />
-                    <Badge label="budget" />
-                </View>
-
-                <Text style={styles.formTitle}>Add a place</Text>
-                <TextInput
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="Name"
-                    style={styles.input}
-                />
-                {errors.name && <Text style={styles.error}>{errors.name}</Text>}
-                <TextInput
-                    value={notes}
-                    onChangeText={setNotes}
-                    placeholder="Notes"
-                    style={styles.input}
-                />
-                {errors.notes && (
-                    <Text style={styles.error}>{errors.notes}</Text>
+                renderItem={({ item }) => (
+                    <PlaceCard  place = {item} 
+                    />
                 )}
-                <TextInput
-                    value={category}
-                    onChangeText={setCategory}
-                    placeholder="Category"
-                    style={styles.input}
-                />
-                {errors.category && (
-                    <Text style={styles.error}>{errors.category}</Text>
-                )}
-                <Button title="Add place" onPress={handleAdd} />
+                ListHeaderComponent={
+                    <View style={{ gap: 12 }}>
+                        <Header title="Wanderlist" tagline="Places you want to see" />
 
-                <Text>{places.length} places</Text>
-                <Button title="Clear list" onPress={() => setPlaces([])} />
-                {places.length === 0 && <Text>No places yet</Text>}
-                {places.map((p) => (
-                    <View key={p.id} style={styles.badgeRow}>
-                        <Text>{p.name}</Text>
-                        <Badge label={p.category} />
+                        <Image
+                            source={{ uri: "https://picsum.photos/400/200" }}
+                            style={{ width: "100%", height: 140, borderRadius: 12 }}
+                        />
+
+                        <Text style={styles.formTitle}>Add a place</Text>
+                        <TextInput
+                            value={name}
+                            onChangeText={setName}
+                            placeholder="Name"
+                            style={styles.input}
+                        />
+                        {errors.name && <Text style={styles.error}>{errors.name}</Text>}
+                        <TextInput
+                            value={notes}
+                            onChangeText={setNotes}
+                            placeholder="Notes"
+                            style={styles.input}
+                        />
+                        {errors.notes && (
+                            <Text style={styles.error}>{errors.notes}</Text>
+                        )}
+                        <TextInput
+                            value={category}
+                            onChangeText={setCategory}
+                            placeholder="Category"
+                            style={styles.input}
+                        />
+                        {errors.category && (
+                            <Text style={styles.error}>{errors.category}</Text>
+                        )}
+                        <View style={styles.badgeRow}>
+                            {allowed.map((c) => (
+                                <Pressable key={c} onPress={() => setCategory(c)}>
+                                    <Badge
+                                        label={`${c} (${places.filter((p) => p.category === c).length})`}
+                                    />
+                                </Pressable>
+                            ))}
+                        </View>
+                        <Button title="Add place" onPress={handleAdd} />
                     </View>
-                ))}
-            </ScrollView>
+                }
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+                ListEmptyComponent={
+                    <Text style={styles.empty}>No places yet - add your first one above.</Text>
+                }
+                ListFooterComponent={
+                    <View style={{ gap: 12 }}>
+                        <Text>{places.length} places</Text>
+                        <Button title="Clear list" onPress={() => setPlaces([])} />
+                    </View>
+                }
+            />
         </SafeAreaView>
     );
 }
@@ -164,4 +165,6 @@ const styles = StyleSheet.create({
     },
     formTitle: { fontSize: 20, fontWeight: "600", marginTop: 12 },
     error: { color: "#c00" },
+    empty: { color: "#666", textAlign: "center", marginTop: 24 },
+    separator: { height: 1, backgroundColor: "#ddd" },
 });
