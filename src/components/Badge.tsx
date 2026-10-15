@@ -1,4 +1,4 @@
-import { Spacing } from "@/constants/theme";
+import { Accent, Spacing } from "@/constants/theme";
 import { StyleSheet, Text, View } from "react-native";
 
 type BadgeProps = {
@@ -18,7 +18,7 @@ export default function Badge({ label, icon }: BadgeProps) {
 
 const styles = StyleSheet.create({
   badge: {
-    backgroundColor: "#ff7a59",
+    backgroundColor: Accent,
     borderRadius: 999,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,

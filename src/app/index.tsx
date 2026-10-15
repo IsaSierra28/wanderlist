@@ -80,26 +80,19 @@ export default function Index() {
     // }));
 
     return (
-        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+        <SafeAreaView style={styles.screen} edges={["top"]}>
             <FlatList
-            data={[...places].sort((a, b) => a.name.localeCompare(b.name))}
+                data={[...places].sort((a, b) => a.name.localeCompare(b.name))}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{
-                    padding: 16,
-                    paddingBottom: BottomTabInset + 16,
-                    gap: 12,
-                }}
-                renderItem={({ item }) => (
-                    <PlaceCard  place = {item} 
-                    />
-                )}
+                contentContainerStyle={styles.list}
+                renderItem={({ item }) => <PlaceCard place={item} />}
                 ListHeaderComponent={
-                    <View style={{ gap: 12 }}>
+                    <View style={styles.section}>
                         <Header title="Wanderlist" tagline="Places you want to see" />
 
                         <Image
                             source={{ uri: "https://picsum.photos/400/200" }}
-                            style={{ width: "100%", height: 140, borderRadius: 12 }}
+                            style={styles.image}
                         />
 
                         <Text style={styles.formTitle}>Add a place</Text>
@@ -145,7 +138,7 @@ export default function Index() {
                     <Text style={styles.empty}>No places yet - add your first one above.</Text>
                 }
                 ListFooterComponent={
-                    <View style={{ gap: 12 }}>
+                    <View style={styles.section}>
                         <Text>{places.length} places</Text>
                         <Button title="Clear list" onPress={() => setPlaces([])} />
                     </View>
@@ -156,6 +149,14 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+    screen: { flex: 1 },
+    list: {
+        padding: 16,
+        paddingBottom: BottomTabInset + 16,
+        gap: 12,
+    },
+    section: { gap: 12 },
+    image: { width: "100%", height: 140, borderRadius: 12 },
     badgeRow: { flexDirection: "row", gap: 8 },
     input: {
         borderWidth: 1,
