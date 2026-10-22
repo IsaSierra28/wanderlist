@@ -15,6 +15,7 @@ import Header from "../components/Header";
 import PlaceCard from "../components/PlaceCard";
 import { BottomTabInset } from "../constants/theme";
 import { Place } from "@/lib/types";
+import { usePlaces } from "@/lib/places-context";
 
 type FormErrors = {
     name?: string;
@@ -29,11 +30,7 @@ function isValidCategory(value: string): boolean {
 }
 
 export default function Index() {
-    const [places, setPlaces] = useState<Place[]>([
-        { id: "kyoto", name: "Kyoto", category: "city", notes: "Temples in autumn" },
-        { id: "banff", name: "Banff", category: "nature", notes: "Lake Louise at sunrise" },
-        { id: "lisbon", name: "Lisbon", category: "food", notes: "Pasteis de nata tour" },
-    ]);
+    const { places, addPlace, clearPlaces } = usePlaces();
     const [name, setName] = useState("");
     const [notes, setNotes] = useState("");
     const [category, setCategory] = useState("");
@@ -66,7 +63,7 @@ export default function Index() {
             notes: notes.trim() || undefined,
             category: category.trim().toLowerCase() as Place["category"],
         };
-        setPlaces([newPlace, ...places]);
+        addPlace(newPlace);
         setName("");
         setNotes("");
         setCategory("");
@@ -140,7 +137,7 @@ export default function Index() {
                 ListFooterComponent={
                     <View style={styles.section}>
                         <Text>{places.length} places</Text>
-                        <Button title="Clear list" onPress={() => setPlaces([])} />
+                        <Button title="Clear list" onPress={clearPlaces} />
                     </View>
                 }
             />
