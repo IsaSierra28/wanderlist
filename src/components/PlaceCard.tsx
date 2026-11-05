@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { Spacing } from "@/constants/theme";
 import Badge from "./Badge";
@@ -16,9 +16,10 @@ export default function PlaceCard({ place }: PlaceCardProps) {
         <Badge label={place.category} />
       </View>
 
-          {place.notes && <Text style={styles.notes} numberOfLines={2}>{place.notes}</Text>}
-
-
+      {place.notes && <Text style={styles.notes} numberOfLines={2}>{place.notes}</Text>}
+      {place.photoUri && (
+        <Image source={{ uri: place.photoUri }} style={styles.photo} />
+      )}
     </View>
   );
 }
@@ -49,5 +50,10 @@ const styles = StyleSheet.create({
   notes: {
     fontSize: 14,
     color: "#555",
+  },
+  photo: {
+    width: "100%",
+    height: 120,
+    borderRadius: 12,
   },
 });

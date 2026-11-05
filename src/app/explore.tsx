@@ -20,8 +20,9 @@ export default function Explore() {
                 }
             } catch {
                 setError("Could not load cities. Check your internet connection and try again.");
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         }
         load();
     }, []);

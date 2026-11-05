@@ -8,6 +8,7 @@ type PlacesValue = {
     clearPlaces: () => void;
     resetPlaces: () => void;
     removePlace: (id: string) => void;
+    setPhoto: (id: string, photoUri?: string) => void;
 };
 
 const PlacesContext = createContext<PlacesValue | null>(null);
@@ -69,8 +70,14 @@ export function PlacesProvider({ children }: { children: ReactNode }) {
         setPlaces(places.filter((place) => place.id !== id));
     }
 
+    function setPhoto(id: string, photoUri?: string) {
+        setPlaces(
+            places.map((place) => (place.id === id ? { ...place, photoUri } : place)),
+        );
+    }
+
     return (
-        <PlacesContext.Provider value={{ places, addPlace, clearPlaces, resetPlaces, removePlace }}>
+        <PlacesContext.Provider value={{ places, addPlace, clearPlaces, resetPlaces, removePlace, setPhoto }}>
             {children}
         </PlacesContext.Provider>
     );
