@@ -5,7 +5,7 @@ import { PlacesProvider } from "../lib/places-context";
 export default function TabLayout() {
     return (
         <PlacesProvider>
-            <Tabs>
+            <Tabs screenOptions={{ tabBarActiveTintColor: "#548" }}>
                 <Tabs.Screen
                     name="index"
                     options={{
@@ -16,9 +16,33 @@ export default function TabLayout() {
                         ),
                     }}
                 />
-                <Tabs.Screen name="add" options={{ title: "Add" }} />
-                <Tabs.Screen name="explore" options={{ title: "Explore" }} />
-                <Tabs.Screen name="settings" options={{ title: "Settings" }} />
+                <Tabs.Screen
+                    name="add"
+                    options={{
+                        title: "Add",
+                        tabBarIcon: ({ color, size }) => (
+                            <Ionicons name="add-circle" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="explore"
+                    options={{
+                        title: "Explore",
+                        tabBarIcon: ({ color, size }) => (
+                            <Ionicons name="compass" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="settings"
+                    options={{
+                        title: "Settings",
+                        tabBarIcon: ({ color, size }) => (
+                            <Ionicons name="settings" color={color} size={size} />
+                        ),
+                    }}
+                />
                 <Tabs.Screen name="place/[id]" options={{ href: null, title: "Place" }} />
             </Tabs>
         </PlacesProvider>
