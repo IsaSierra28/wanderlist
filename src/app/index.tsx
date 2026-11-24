@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import PlaceCard from "../components/PlaceCard";
 import { BottomTabInset } from "../constants/theme";
 import { usePlaces } from "@/lib/places-context";
+import { sortPlacesByName } from "../lib/places";
 
 export default function Index() {
     const { places, clearPlaces } = usePlaces();
@@ -12,7 +13,7 @@ export default function Index() {
     return (
         <SafeAreaView style={styles.screen} edges={["top"]}>
             <FlatList
-                data={[...places].sort((a, b) => a.name.localeCompare(b.name))}
+                data={sortPlacesByName(places)}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.list}
                 renderItem={({ item }) => (

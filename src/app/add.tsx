@@ -1,66 +1,20 @@
-import { router } from "expo-router";
-import { useState} from "react";
-import {
-   Button, 
-   Pressable, 
-   ScrollView, 
-   StyleSheet, 
-   Text, 
-   TextInput, 
-   View, 
-
-} from "react-native";
+import { Button, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import Badge from "../components/Badge";
-import { usePlaces } from "../lib/places-context";
-import { Place } from "../lib/types";
+import { usePlaceForm } from "../hooks/use-place-form";
+import { categories } from "../lib/validation";
 
-type FormErrors = {
-  name?: string, 
-  notes? : string, 
-  category?: string, 
-
-};
-const allowed = ["city", "nature", "food", "other"];
-function isValidCategory(value: string): boolean {
-   return allowed.includes(value.trim().toLowerCase());
-}
 export default function Add() {
-   const{ places, addPlace } = usePlaces();
-   const [name, setName] = useState("");
-   const [notes, setNotes] = useState("");
-   const [category, setCategory] = useState("");
-   const [errors, setErrors] = useState<FormErrors>({});
-
-   function validate() {
-      const next: FormErrors = {};  
-      if (!name.trim()) next.name = "Name is required.";  
-      if (name.trim().length > 40) {
-         next.name = "Name must be 40 characters or fewer.";
-      }
-      if (places.some((p) => p.name === name.trim())) {
-         next.notes = "That place is already in the list.";
-      }
-      if (!isValidCategory(category)) {
-         next.category = `Category must be one of: ${allowed.join(",")}.`;
-      }
-      setErrors(next);
-      return Object.keys(next).length === 0;
-   }
-   function handleAdd() {
-        if (!validate()) return;
-        const newPlace: Place = {
-            id: Date.now().toString(),
-            name: name.trim(),
-            notes: notes.trim() || undefined,
-            category: category.trim().toLowerCase() as Place["category"],
-        };
-        addPlace(newPlace);
-        setName("");
-        setNotes("");
-        setCategory("");
-        setErrors({});
-        router.navigate("/");
-    }
+    const {
+        places,
+        name,
+        setName,
+        notes,
+        setNotes,
+        category,
+        setCategory,
+        errors,
+        submit,
+    } = usePlaceForm();
 
     return (
         <ScrollView contentContainerStyle={styles.form}>
@@ -87,7 +41,7 @@ export default function Add() {
             />
             {errors.category && <Text style={styles.error}>{errors.category}</Text>}
             <View style={styles.badgeRow}>
-                {allowed.map((c) => (
+                {categories.map((c) => (
                     <Pressable key={c} onPress={() => setCategory(c)}>
                         <Badge
                             label={`${c} (${places.filter((p) => p.category === c).length})`}
@@ -95,7 +49,7 @@ export default function Add() {
                     </Pressable>
                 ))}
             </View>
-            <Button title="Add place" onPress={handleAdd} />
+            <Button title="Add place" onPress={submit} />
         </ScrollView>
     );
 }
