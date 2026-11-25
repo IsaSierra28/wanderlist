@@ -21,7 +21,7 @@ export function usePlaceForm() {
     function submit() {
         if (!validate()) return;
         const newPlace: Place = {
-            id: Date.now(),
+            id: Date.now().toString(),
             name: name.trim(),
             notes: notes.trim() || undefined,
             category: category.trim().toLowerCase() as Place["category"],
